@@ -35,6 +35,7 @@ import tw.com.hasco.MSFS.network.MsfsUdpServer;
  * @author ktc
  */
 public class GFlightFrame12 extends javax.swing.JFrame {
+    LocaleManager l = LocaleManager.getInstance("Taiwan");
     ExecutorService executor = Executors.newFixedThreadPool(3);
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
     LicFrame licFrame;
@@ -817,7 +818,7 @@ public class GFlightFrame12 extends javax.swing.JFrame {
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         // TODO add your handling code here:
         Debugger.log("about");
-        JOptionPane.showMessageDialog(null, LocaleManager.getInstance().getString("credit"), "關於", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, LocaleManager.getInstance("Taiwan").getString("credit"), "關於", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
     private void macMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_macMenuItemActionPerformed
@@ -829,7 +830,7 @@ public class GFlightFrame12 extends javax.swing.JFrame {
     private void buyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buyMenuItemActionPerformed
         // TODO add your handling code here:
         Debugger.log("about");
-        JOptionPane.showMessageDialog(null, LocaleManager.getInstance().getString("licenseFileError"), "購買", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, LocaleManager.getInstance("Taiwan").getString("licenseFileError"), "購買", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_buyMenuItemActionPerformed
 
     private void idMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idMenuItemActionPerformed

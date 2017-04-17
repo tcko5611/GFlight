@@ -27,14 +27,17 @@ import tw.com.hasco.MSFS.model.DataGetter;
 import tw.com.hasco.MSFS.model.PlaneType;
 import tw.com.hasco.MSFS.network.MsfsUdpClient;
 import tw.com.hasco.MSFS.network.MsfsUdpServer;
+import tw.com.hasco.arduino.SPFrame;
 import tw.com.hasco.arduino.StewPlatform;
-
 
 /**
  *
  * @author ktc
  */
 public class GFlightFrame extends javax.swing.JFrame {
+
+    LocaleManager locale;
+
     ExecutorService executor = Executors.newFixedThreadPool(3);
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
     LicFrame licFrame;
@@ -49,7 +52,7 @@ public class GFlightFrame extends javax.swing.JFrame {
     Plot6Frame plot6Frame;
     DataGetter dataGetter;
     // if not have stewplatform then set as null
-    StewPlatform sp;
+    SPFrame spFrame;
     double recordPeriod = 5; // record time period
 
     boolean recordable = false;
@@ -77,7 +80,7 @@ public class GFlightFrame extends javax.swing.JFrame {
         // check lic
         disableAll();
         checkLic();
-
+        updateWidgetText();
         userTextField.setText(LicChecker.getInstance().getLicInfo());
 
         licFrame = new LicFrame();
@@ -90,14 +93,47 @@ public class GFlightFrame extends javax.swing.JFrame {
         threeDFrame = new ThreeDFrame();
         plot6Frame = new Plot6Frame();
         altFrame = new AltFrame();
-        if (false) {
-            try {
-                sp = new StewPlatform();
-            } catch (SerialPortException ex) {
-                Logger.getLogger(GFlightFrame.class.getName()).log(Level.SEVERE, null, ex);
-                sp = null;
-            }
-        }
+        spFrame = new SPFrame();
+    }
+
+    private void updateWidgetText() {
+        // widget
+        userLabel.setText(locale.getString("user"));
+        fileLabel.setText(locale.getString("fileLoc"));
+        dataLabel.setText(locale.getString("dataRecord"));
+        startRecordButton.setText(locale.getString("start"));
+        stopRecordButton.setText(locale.getString("stop"));
+        reflyButton.setText(locale.getString("refly"));
+        clearButton.setText(locale.getString("clear"));
+        dataFreqLabel.setText(locale.getString("dataFreq"));
+        secondLabel.setText(locale.getString("sec"));
+        // menu
+        llaMenuItem.setText(locale.getString("ckbox_g1"));
+        ctrlMenuItem.setText(locale.getString("ckbox_g2"));
+        pitchMenuItem.setText(locale.getString("ckbox_g3"));
+        rollMenuItem.setText(locale.getString("ckbox_g4"));
+        yawMenuItem.setText(locale.getString("ckbox_g5"));
+        planeMenuItem.setText(locale.getString("ckbox_g6"));
+        altMenuItem.setText(locale.getString("ckbox_g7"));
+        threeDMenuItem.setText(locale.getString("ckbox_g8"));
+        plot6MenuItem.setText(locale.getString("ckbox_g9"));
+        recordMenuItem.setText(locale.getString("ckbox_r2") + " REC");
+        playMenuItem.setText(locale.getString("ckbox_r3") + " Play");
+        clearMenuItem.setText(locale.getString("ckbox_g1") + " Clr");
+        selfAirportMenuItem.setText(locale.getString("ckbox_m1"));
+        self2DMapMenuItem.setText(locale.getString("ckbox_m2"));
+        self3DBuildingMenuItem.setText(locale.getString("ckbox_m3"));
+        coorMapMenuItem.setText(locale.getString("ckbox_m4"));
+        markMenuItem.setText(locale.getString("ckbox_m5"));
+        phyMathMenuItem.setText(locale.getString("ckbox_a1"));
+        airDynMenuItem.setText(locale.getString("ckbox_a2"));
+        trainMenuItem.setText(locale.getString("ckbox_a3"));
+        quilityMenuItem.setText(locale.getString("ckbox_a4"));
+        safeCheckMenuItem.setText(locale.getString("ckbox_a5"));
+        antiShipMenuItem.setText(locale.getString("ckbox_d1"));
+        airPicMenuItem.setText(locale.getString("ckbox_d2"));
+         buyMenuItem.setText(locale.getString("buy") + " g-Flight");
+         aboutMenuItem.setText(locale.getString("about") + " g-Flight");
     }
 
     private void disableAll() {
@@ -131,159 +167,164 @@ public class GFlightFrame extends javax.swing.JFrame {
     }
 
     private void checkLic() {
-
+        LicChecker lic = LicChecker.getInstance();
         // graphic
-        if (LicChecker.getInstance().isG1_LLA()) {
+        if (lic.isG1_LLA()) {
             llaMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG2_CTRL()) {
+        if (lic.isG2_CTRL()) {
             ctrlMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG3_PITCH()) {
+        if (lic.isG3_PITCH()) {
             pitchMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG4_ROLL()) {
+        if (lic.isG4_ROLL()) {
             rollMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG5_YAW()) {
+        if (lic.isG5_YAW()) {
             yawMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG6_PLANE()) {
+        if (lic.isG6_PLANE()) {
             planeMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG7_ALT()) {
+        if (lic.isG7_ALT()) {
             altMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG8_THREED()) {
+        if (lic.isG8_THREED()) {
             threeDMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isG9_PLOT6()) {
+        if (lic.isG9_PLOT6()) {
             plot6MenuItem.setEnabled(true);
         }
         // Simulator
 
-        if (LicChecker.getInstance().isS1_FSX()) {
+        if (lic.isS1_FSX()) {
             fs2002MenuItem.setEnabled(true);
             fs2004MenuItem.setEnabled(true);
             fsxMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isS2_XPLANE()) {
+        if (lic.isS2_XPLANE()) {
             xplaneMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isS3_MODEL()) {
+        if (lic.isS3_MODEL()) {
             // to be determined
         }
-        if (LicChecker.getInstance().isS4_DOF3()) {
+        if (lic.isS4_DOF3()) {
             // to be determined
         }
-        if (LicChecker.getInstance().isS5_DOF6()) {
+        if (lic.isS5_DOF6()) {
             // to be determined
         }
         // TODO add your handling code here:
 
-        if (LicChecker.getInstance().isR1_REFLY()) {
+        if (lic.isR1_REFLY()) {
             reflyAble = true;
         }
-        if (LicChecker.getInstance().isR2_RECORD()) {
+        if (lic.isR2_RECORD()) {
             recordable = true;
             recordMenuItem.setEnabled(true);
         }
-        if (LicChecker.getInstance().isR3_PLAY()) {
+        if (lic.isR3_PLAY()) {
             playMenuItem.setEnabled(true);
         }
 
         // for map 
-        if (LicChecker.getInstance().isM1_SELFPORT()) {
+        if (lic.isM1_SELFPORT()) {
 
         }
-        if (LicChecker.getInstance().isM2_SELF2DMAP()) {
+        if (lic.isM2_SELF2DMAP()) {
 
         }
-        if (LicChecker.getInstance().isM3_SELF3DBUIL()) {
+        if (lic.isM3_SELF3DBUIL()) {
 
         }
-        if (LicChecker.getInstance().isM4_COORMAP()) {
+        if (lic.isM4_COORMAP()) {
 
         }
-        if (LicChecker.getInstance().isM5_MARK()) {
+        if (lic.isM5_MARK()) {
 
         }
 
         // aviation
-        if (LicChecker.getInstance().isA1_PHYMATH()) {
+        if (lic.isA1_PHYMATH()) {
         }
-        if (LicChecker.getInstance().isA2_AIRDYN()) {
+        if (lic.isA2_AIRDYN()) {
 
         }
-        if (LicChecker.getInstance().isA3_FLYTRAIN()) {
+        if (lic.isA3_FLYTRAIN()) {
 
         }
-        if (LicChecker.getInstance().isA4_FLYQUAL()) {
+        if (lic.isA4_FLYQUAL()) {
 
         }
-        if (LicChecker.getInstance().isA5_FLYCHK()) {
+        if (lic.isA5_FLYCHK()) {
 
         }
         // defence
 
-        if (LicChecker.getInstance().isD1_ENESHIP()) {
+        if (lic.isD1_ENESHIP()) {
 
         }
-        if (LicChecker.getInstance().isD2_AIRPIC()) {
+        if (lic.isD2_AIRPIC()) {
 
         }
         // Area Data
 
-        if (LicChecker.getInstance().isT1_TWN()) {
+        if (lic.isT1_TWN()) {
 
         }
-        if (LicChecker.getInstance().isT2_NASIA()) {
+        if (lic.isT2_NASIA()) {
 
         }
-        if (LicChecker.getInstance().isT3_SASIA()) {
+        if (lic.isT3_SASIA()) {
 
         }
-        if (LicChecker.getInstance().isT4_PAC()) {
+        if (lic.isT4_PAC()) {
 
         }
-        if (LicChecker.getInstance().isT5_USA()) {
+        if (lic.isT5_USA()) {
 
         }
 
         // Airport Data
-        if (LicChecker.getInstance().isU1_TWN()) {
+        if (lic.isU1_TWN()) {
 
         }
-        if (LicChecker.getInstance().isU2_NASIA()) {
+        if (lic.isU2_NASIA()) {
 
         }
-        if (LicChecker.getInstance().isU3_SASIA()) {
+        if (lic.isU3_SASIA()) {
 
         }
-        if (LicChecker.getInstance().isU4_PAC()) {
+        if (lic.isU4_PAC()) {
 
         }
-        if (LicChecker.getInstance().isU5_USA()) {
+        if (lic.isU5_USA()) {
 
         }
 
         // AIDZ FIR
-        if (LicChecker.getInstance().isV1_TWN()) {
+        if (lic.isV1_TWN()) {
 
         }
-        if (LicChecker.getInstance().isV2_NASIA()) {
+        if (lic.isV2_NASIA()) {
 
         }
-        if (LicChecker.getInstance().isV3_SASIA()) {
+        if (lic.isV3_SASIA()) {
 
         }
-        if (LicChecker.getInstance().isV4_PAC()) {
+        if (lic.isV4_PAC()) {
 
         }
-        if (LicChecker.getInstance().isV5_USA()) {
+        if (lic.isV5_USA()) {
 
         }
-
+        int lic_lang = lic.getLang();
+        if (lic_lang == lic.getLangTw()) {
+            locale = LocaleManager.getInstance("Taiwan");
+        } else if (lic_lang == lic.getLangCn()) {
+            locale = LocaleManager.getInstance("China");
+        }
     }
 
     /**
@@ -619,7 +660,11 @@ public class GFlightFrame extends javax.swing.JFrame {
 
         to6DofMenuItem.setFont(new java.awt.Font("微軟正黑體", 0, 14)); // NOI18N
         to6DofMenuItem.setText("To 6-DOF");
-        to6DofMenuItem.setEnabled(false);
+        to6DofMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                to6DofMenuItemActionPerformed(evt);
+            }
+        });
         simulatorMeu.add(to6DofMenuItem);
 
         jMenuBar1.add(simulatorMeu);
@@ -843,7 +888,7 @@ public class GFlightFrame extends javax.swing.JFrame {
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         // TODO add your handling code here:
         Debugger.log("about");
-        JOptionPane.showMessageDialog(null, LocaleManager.getInstance().getString("credit"), "關於", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, LocaleManager.getInstance("Taiwan").getString("credit"), "關於", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
     private void macMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_macMenuItemActionPerformed
@@ -855,7 +900,7 @@ public class GFlightFrame extends javax.swing.JFrame {
     private void buyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buyMenuItemActionPerformed
         // TODO add your handling code here:
         Debugger.log("about");
-        JOptionPane.showMessageDialog(null, LocaleManager.getInstance().getString("licenseFileError"), "購買", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, LocaleManager.getInstance("Taiwan").getString("licenseFileError"), "購買", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_buyMenuItemActionPerformed
 
     private void idMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idMenuItemActionPerformed
@@ -999,6 +1044,11 @@ public class GFlightFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         plot6Frame.setVisible(true);
     }//GEN-LAST:event_plot6MenuItemActionPerformed
+
+    private void to6DofMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_to6DofMenuItemActionPerformed
+        // TODO add your handling code here:
+        this.spFrame.setVisible(true);
+    }//GEN-LAST:event_to6DofMenuItemActionPerformed
     public void fsActionPerformed(ActionEvent e) {
         stopDataGetter();
         try {
@@ -1016,9 +1066,8 @@ public class GFlightFrame extends javax.swing.JFrame {
             traceFrame.clearData();
             threeDFrame.clearData();
             plot6Frame.clearData();
-            if (sp != null) {
-                sp.stop();
-            }
+            spFrame.stop();
+            spFrame.disableButtons();
         }
         reflyButton.setEnabled(false);
         dataGetter = null;
@@ -1035,21 +1084,15 @@ public class GFlightFrame extends javax.swing.JFrame {
         dataGetter.addObserver(threeDFrame);
         dataGetter.addObserver(plot6Frame);
         dataGetter.addObserver(altFrame);
-        if (sp != null) {
-            sp.start();
-            dataGetter.addObserver(sp);
-        }
+        dataGetter.addObserver(spFrame);
+        spFrame.enableStartButton();
         if (recordable) {
             this.recordMenuItem.setEnabled(true);
             startRecordButton.setEnabled(true);
             stopRecordButton.setEnabled(false);
             clearButton.setEnabled(false);
         }
-        
         executor.execute(dataGetter);
-        if (sp != null) {
-            executor.execute(sp);
-        }
     }
 
     /**
