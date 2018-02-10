@@ -918,7 +918,7 @@ public class GFlightFrame12 extends javax.swing.JFrame {
             try {
                 String fileName = c.getCurrentDirectory().toString() + "\\" + c.getSelectedFile().getName();
                 this.fileTextField.setText(fileName);
-                dataGetter = new DataGetter(fileName, PlaneType.AIRCRAFT);
+                dataGetter = new DataGetter( PlaneType.AIRCRAFT, fileName);
                 this.setDataGetter();
                 startRecordButton.setEnabled(false);
             } catch (IOException ex) {
@@ -951,7 +951,7 @@ public class GFlightFrame12 extends javax.swing.JFrame {
         try {
             String fileName = "C:/temp/temp_hasco.csv";
             // this.fileTextField.setText(fileName);
-            dataGetter = new DataGetter(fileName, PlaneType.AIRCRAFT);
+            dataGetter = new DataGetter( PlaneType.AIRCRAFT,fileName);
             this.setDataGetter();
             startRecordButton.setEnabled(false);
         } catch (IOException ex) {
